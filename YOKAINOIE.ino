@@ -7,6 +7,20 @@
 #define YORIGIN SCREEN_HEIGHT - 44
 #define xposmax SCREEN_WIDTH -84
 #define DELTIME 500
+// Declaration for SSD1306 display connected using software SPI (default case):
+#define OLED_MOSI  16
+#define OLED_CLK   3
+#define OLED_DC    18
+#define OLED_CS    12
+#define OLED_RESET 9
+#define LBUTTON 4
+#define RBUTTON 5
+#define CBUTTON 6
+int leftbuttonPressed = 0;
+int rightbuttonPressed = 0;
+int centerbuttonPressed = 0;
+int menucount = 0;
+bool menuon = false;
 /*
 // Declaration for SSD1306 display connected using software SPI (default case):
 #define OLED_MOSI  16
@@ -35,24 +49,106 @@ void setup() {
     for(;;);
   }
    
+   pinMode(LBUTTON, INPUT);
+  pinMode(RBUTTON, INPUT);
+  pinMode(CBUTTON, INPUT);
+digitalWrite(LBUTTON, HIGH);  // turn on pullup resistor
+digitalWrite(RBUTTON, HIGH);  // turn on pullup resistor
+digitalWrite(CBUTTON, HIGH);  // turn on pullup resistor
+  
   // Clear the buffer.
   display.clearDisplay();
   display.display();
-  delay(1000); // Pause for 2 seconds
+  delay(500); // Pause for 2 seconds
  
   // Clear the buffer.
   display.clearDisplay();
-
+drawMenu();
   //display.setRotation(2);
- drawMenu();
+ 
 
 }
 
 
  
 void loop() {
+drawMenu();
+leftbuttonPressed = digitalRead(LBUTTON);
+rightbuttonPressed = digitalRead(RBUTTON);
+centerbuttonPressed = digitalRead(CBUTTON);
+
+if (centerbuttonPressed == LOW){
+  delay(100);
+  menuon = !menuon;
+}
+  if(menuon){
+    if (leftbuttonPressed == LOW) {
+      delay(100);
+      if(menucount >0){
+        menucount--;
+      }
+      else{
+        menucount = 4;
+      }
+    }
+     else if(rightbuttonPressed ==LOW){
+       delay(100);
+      if(menucount <4){
+        menucount++;
+     }
+      else{
+        menucount =0;
+     }
+     }
+     switch(menucount){
+      case 0:
+        display.clearDisplay();
+        drawMenu();
+        display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
+        
+      break;
+      case 1:
+        display.clearDisplay();
+        drawMenu();
+        display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
+        
+      break;
+      case 2:
+      display.clearDisplay();
+      drawMenu();
+      display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
+      
+      break;
+      
+      case 3:
+      display.clearDisplay();
+      drawMenu();
+      display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
+      
+      break;
+
+      case 4:
+      display.clearDisplay();
+      drawMenu();
+      display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
+      
+      break;
+      
+    }
+    
+    display.display();
+    }
+else if(menuon == false){
+  display.clearDisplay();
+  drawMenu();
+  display.display();
+}
+  }
+
+
 
  
+/*else{
 Emote(slimeSleep);
  delay(500);
  testdeathsDoor();
@@ -67,7 +163,7 @@ Emote(slimeSleep);
 delay(500);
   drawMenu();
 }
-
+}
  void Emote(const unsigned char animation[][264]){
   for (int i = 0; i <sizeof animation; i++){
    display.drawBitmap(xpos,YORIGIN,
@@ -77,28 +173,22 @@ delay(500);
   clearSpace();
   delay(DELTIME); 
   }
-   
-}
+*/ 
+
 
 
 void clearSpace(){
-  display.fillRect(0,16, 128, 64, BLACK);
+  display.fillRect(0,17, 128, 47, BLACK);
   
 }
 
 void drawMenu(){
   for (int i = 0;i <= 4;i++){
-      display.drawBitmap(3+(i*26), 0, menuIcons[i],16,16,1);
+      display.drawBitmap(3+(i*26), 1, menuIcons[i],16,16,1);
+      
+   }
   }
-}
-/*
-void drawMenu(){
-  for (int i = 0; i < sizeof menuIcons/2; i+=16) {
-    for (int j = 0; j< 2; j++){
-      display.drawBitmap(i, 0, menuIcons[j],16,16,1);
-    }
-  }
-}
+
 /*
 
  /*   
