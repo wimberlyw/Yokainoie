@@ -8,11 +8,11 @@
 #define xposmax SCREEN_WIDTH -84
 #define DELTIME 500
 // Declaration for SSD1306 display connected using software SPI (default case):
-#define OLED_MOSI  16
+/*#define OLED_MOSI  16
 #define OLED_CLK   3
 #define OLED_DC    18
 #define OLED_CS    12
-#define OLED_RESET 9
+#define OLED_RESET 9*/
 #define LBUTTON 4
 #define RBUTTON 5
 #define CBUTTON 6
@@ -60,10 +60,9 @@ digitalWrite(CBUTTON, HIGH);  // turn on pullup resistor
   display.clearDisplay();
   display.display();
   delay(500); // Pause for 2 seconds
- 
-  // Clear the buffer.
+ // Clear the buffer.
   display.clearDisplay();
-drawMenu();
+  drawMenu();
   //display.setRotation(2);
  
 
