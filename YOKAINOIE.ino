@@ -8,11 +8,11 @@
 #define xposmax SCREEN_WIDTH -84
 #define DELTIME 500
 // Declaration for SSD1306 display connected using software SPI (default case):
-/*#define OLED_MOSI  16
+#define OLED_MOSI  16
 #define OLED_CLK   3
 #define OLED_DC    18
 #define OLED_CS    12
-#define OLED_RESET 9*/
+#define OLED_RESET 9
 #define LBUTTON 4
 #define RBUTTON 5
 #define CBUTTON 6
@@ -21,35 +21,29 @@ int rightbuttonPressed = 0;
 int centerbuttonPressed = 0;
 int menucount = 0;
 bool menuon = false;
-/*
-// Declaration for SSD1306 display connected using software SPI (default case):
-#define OLED_MOSI  16
-#define OLED_CLK   3
-#define OLED_DC    18
-#define OLED_CS    12
-#define OLED_RESET 9
+bool hasTicked = false;
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
+  OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
-//Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
-//  OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
-*/
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
-
-
-int xpos = 44;
+int xpos = 22;
 int xposmin = 0;
 bool MOVERIGHT = true;
+unsigned long previousMillis = 0;        // will store last time counter was updated
+// constants won't change :
+const long interval = 500;   
+
+
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
  
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;);
   }
-   
-   pinMode(LBUTTON, INPUT);
+
+ 
+
+  pinMode(LBUTTON, INPUT);
   pinMode(RBUTTON, INPUT);
   pinMode(CBUTTON, INPUT);
 digitalWrite(LBUTTON, HIGH);  // turn on pullup resistor
@@ -60,9 +54,10 @@ digitalWrite(CBUTTON, HIGH);  // turn on pullup resistor
   display.clearDisplay();
   display.display();
   delay(500); // Pause for 2 seconds
- // Clear the buffer.
+ 
+  // Clear the buffer.
   display.clearDisplay();
-  drawMenu();
+drawMenu();
   //display.setRotation(2);
  
 
@@ -71,6 +66,14 @@ digitalWrite(CBUTTON, HIGH);  // turn on pullup resistor
 
  
 void loop() {
+   unsigned long currentMillis = millis();
+
+    
+  if (currentMillis - previousMillis >= interval) {
+    // save the last time you blinked
+    previousMillis = currentMillis;
+    hasTicked = !hasTicked;}
+    
 drawMenu();
 leftbuttonPressed = digitalRead(LBUTTON);
 rightbuttonPressed = digitalRead(RBUTTON);
@@ -101,33 +104,33 @@ if (centerbuttonPressed == LOW){
      }
      switch(menucount){
       case 0:
-        display.clearDisplay();
+        clearMenu();
         drawMenu();
         display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
         
       break;
       case 1:
-        display.clearDisplay();
+        clearMenu();
         drawMenu();
         display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
         
       break;
       case 2:
-      display.clearDisplay();
+      clearMenu();
       drawMenu();
       display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
       
       break;
       
       case 3:
-      display.clearDisplay();
+      clearMenu();
       drawMenu();
       display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
       
       break;
 
       case 4:
-      display.clearDisplay();
+      clearMenu();
       drawMenu();
       display.drawRect(3+(menucount*26), 0, 17,17,WHITE);
       
@@ -138,11 +141,20 @@ if (centerbuttonPressed == LOW){
     display.display();
     }
 else if(menuon == false){
-  display.clearDisplay();
+  clearMenu();
   drawMenu();
   display.display();
 }
+
+Serial.print(hasTicked+"\n");
+if (hasTicked){
+Emote0(slimeIdle);}
+else {
+  Emote1(slimeIdle);}
+
   }
+  
+
 
 
 
@@ -162,23 +174,37 @@ Emote(slimeSleep);
 delay(500);
   drawMenu();
 }
-}
- void Emote(const unsigned char animation[][264]){
-  for (int i = 0; i <sizeof animation; i++){
-   display.drawBitmap(xpos,YORIGIN,
-  animation[i], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
+*/
+
+ void Emote0(const unsigned char animation[][704]){
+/*  for (int i = 0; i <sizeof animation; i++){
   clearSpace();
-  delay(DELTIME); 
-  }
-*/ 
+   display.drawBitmap(xpos,YORIGIN,
+  animation[i], 88, 44, 1);
+  display.display();
+    }*/
+ 
+  clearYokaiSpace();
+  display.drawBitmap(xpos,YORIGIN,
+  animation[0], 128, 44, 1);
+  display.display();
+  
+ }
 
+void Emote1(const unsigned char animation[][704]){
+   clearYokaiSpace();
+   display.drawBitmap(xpos,YORIGIN,
+  animation[1], 128, 44, 1);
+  display.display();
+}
 
-
-void clearSpace(){
+void clearYokaiSpace(){
   display.fillRect(0,17, 128, 47, BLACK);
   
+}
+
+void clearMenu(){
+  display.fillRect(0, 0, 128, 17, BLACK);
 }
 
 void drawMenu(){
@@ -215,7 +241,7 @@ display.drawBitmap(
   delay(DELTIME);
      }*/
 
-void testdeathsDoor(){
+/*void testdeathsDoor(){
   display.drawBitmap(xpos,YORIGIN,
   slimeDying[0], 44, 44, 1);
   display.display();
@@ -308,13 +334,14 @@ display.drawBitmap(
   clearSpace();
   delay(DELTIME);
      }
+     */
 void testMove(){
   if(MOVERIGHT){
   display.drawBitmap(xpos,YORIGIN,
   slimeIdle[0], 88, 44, 1);
   display.display();
   delay(DELTIME);
-  clearSpace();
+  clearYokaiSpace();
   delay(DELTIME);
   xpos+=2;
 
@@ -323,7 +350,7 @@ display.drawBitmap(
     slimeIdle[1], 88, 44, 1);
   display.display();
   delay(DELTIME);
-  clearSpace();
+  clearYokaiSpace();
      xpos+=2;}
   
   if (not(MOVERIGHT))
@@ -331,7 +358,7 @@ display.drawBitmap(
   slimeIdle[0], 88, 44, 1);
   display.display();
   delay(DELTIME);
-  clearSpace();
+  clearYokaiSpace();
   delay(DELTIME);
   xpos-=2;
   
@@ -340,7 +367,7 @@ display.drawBitmap(
     slimeIdle[1], 88, 44, 1);
   display.display();
   delay(DELTIME);
-  clearSpace();
+  clearYokaiSpace();
     xpos-=2;}
   
   if (xpos<xposmax && MOVERIGHT|| xpos < xposmin ) {
