@@ -9,6 +9,7 @@ Wiring diagram will be uploaded eventially.
 
 You create (3d print) a space for a Yokai to inhabit. One will fill the space as a spirit "blob" at first, until it is comfortable enough to reveal its true form to you. Keep track of the Yokai's emotions, play games with it, feed it treats while it inhabits your space. 
 
+9/4 Update - Working menu and all sprites included and 128x64. 
 
 9/3 Update - Working menu - the menu selection works
 working on adding JKP mini- game.
