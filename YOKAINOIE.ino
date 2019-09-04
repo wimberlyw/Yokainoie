@@ -1,54 +1,62 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "sprites.h"
+#include <EEPROM.h>
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
-#define XORIGIN 22
-#define YORIGIN SCREEN_HEIGHT - 44
-#define xposmax SCREEN_WIDTH -84
-#define DELTIME 500
-// Declaration for SSD1306 display connected using software SPI (default case):
 #define OLED_MOSI  16
 #define OLED_CLK   3
 #define OLED_DC    18
 #define OLED_CS    12
 #define OLED_RESET 9
+#define XORIGIN 22
+#define YORIGIN 20
+#define DELTIME 500
+// Declaration for SSD1306 display connected using software SPI (default case):
+#define BBUTTON 7
 #define LBUTTON 4
 #define RBUTTON 5
 #define CBUTTON 6
 int leftbuttonPressed = 0;
 int rightbuttonPressed = 0;
 int centerbuttonPressed = 0;
+int bbuttonPressed = 0;
 int menucount = 0;
 bool menuon = false;
 bool hasTicked = false;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
-  OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
-
+ OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+int xposmax = SCREEN_WIDTH - 108;
 int xpos = 22;
-int xposmin = 0;
+int xposmin = -20;
 bool MOVERIGHT = true;
 unsigned long previousMillis = 0;        // will store last time counter was updated
 // constants won't change :
 const long interval = 500;   
+bool GenWait = false;
+int randNumber = 0;
 
 
 void setup() {
   Serial.begin(9600);
+  
  
+ //make sure display runs, spit out serial error if not. 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;);
   }
 
  
-
+ 
   pinMode(LBUTTON, INPUT);
   pinMode(RBUTTON, INPUT);
   pinMode(CBUTTON, INPUT);
-digitalWrite(LBUTTON, HIGH);  // turn on pullup resistor
-digitalWrite(RBUTTON, HIGH);  // turn on pullup resistor
-digitalWrite(CBUTTON, HIGH);  // turn on pullup resistor
+  pinMode(BBUTTON, INPUT);
+  digitalWrite(LBUTTON, HIGH);  // turn on pullup resistor
+  digitalWrite(RBUTTON, HIGH);  // turn on pullup resistor
+  digitalWrite(CBUTTON, HIGH);  // turn on pullup resistor
+  digitalWrite(BBUTTON, HIGH);
   
   // Clear the buffer.
   display.clearDisplay();
@@ -57,27 +65,35 @@ digitalWrite(CBUTTON, HIGH);  // turn on pullup resistor
  
   // Clear the buffer.
   display.clearDisplay();
-drawMenu();
+  drawMenu();
   //display.setRotation(2);
  
-
 }
 
 
  
 void loop() {
+   //1 millisecond timer without delay
    unsigned long currentMillis = millis();
-
-    
   if (currentMillis - previousMillis >= interval) {
     // save the last time you blinked
     previousMillis = currentMillis;
     hasTicked = !hasTicked;}
     
-drawMenu();
-leftbuttonPressed = digitalRead(LBUTTON);
-rightbuttonPressed = digitalRead(RBUTTON);
-centerbuttonPressed = digitalRead(CBUTTON);
+    drawMenu();
+    leftbuttonPressed = digitalRead(LBUTTON);
+    rightbuttonPressed = digitalRead(RBUTTON);
+    centerbuttonPressed = digitalRead(CBUTTON);
+    bbuttonPressed = digitalRead(BBUTTON);
+
+//if (GenWait == false){
+    
+  //  GenWait = true;}
+
+
+
+
+//Check for button press
 
 if (centerbuttonPressed == LOW){
   delay(100);
@@ -101,6 +117,7 @@ if (centerbuttonPressed == LOW){
       else{
         menucount =0;
      }
+     //update the menu selector on screen based on button press
      }
      switch(menucount){
       case 0:
@@ -140,68 +157,136 @@ if (centerbuttonPressed == LOW){
     
     display.display();
     }
-else if(menuon == false){
+  else if(menuon == false){
   clearMenu();
   drawMenu();
   display.display();
 }
 
-Serial.print(hasTicked+"\n");
-if (hasTicked){
-Emote0(slimeIdle);}
-else {
-  Emote1(slimeIdle);}
+
+if (bbuttonPressed ==LOW){
+  delay(100);
+  randomSeed(micros());
+  randNumber = random(0, 6);
+
+}
+
+switch(randNumber){
+    case 0:
+    if (hasTicked){
+    slimeMove0();}
+      else {
+    slimeMove1();}
+      break;
+    case 1:
+      if (hasTicked){
+    YokaiFrame2(kappa);}
+      else {
+    YokaiFrame1(kappa);}
+      break;
+    case 2:
+      if (hasTicked){
+    YokaiFrame2(umibozu);}
+      else {
+    YokaiFrame1(umibozu);}
+      break;
+    case 3:
+      if (hasTicked){
+    YokaiFrame2(necklady);}
+      else {
+    YokaiFrame1(necklady);}
+      break;
+    case 4:
+      if (hasTicked){
+    YokaiFrame2(umbrella);}
+      else {
+    YokaiFrame1(umbrella);}
+      break;
+      case 5:
+      if (hasTicked){
+    YokaiFrame2(tanuki);}
+      else {
+    YokaiFrame1(tanuki);}
+      break;
+  }
+
+}
+void clearYokaiSpace(){
+  display.fillRect(0,17, 128, 47, BLACK);}
+
+void YokaiFrame1(const unsigned char theyokai[][704]){
+  clearYokaiSpace();
+  display.drawBitmap(0,18,
+  theyokai[0], 128, 44, 1);
+  display.display();
+  
+ 
+}
+
+void YokaiFrame2(const unsigned char theyokai[][704]){
+  clearYokaiSpace();
+  display.drawBitmap(0,18,
+  theyokai[1], 128, 44, 1);
+  display.display(); 
+ 
+}
+
+void slimeMove0(){
+  if(MOVERIGHT){
+    clearYokaiSpace();
+  display.drawBitmap(xpos,18,
+  slime[0], 128, 44, 1);
+  display.display();
+  xpos+=2;
 
   }
-  
-
-
-
-
- 
-/*else{
-Emote(slimeSleep);
- delay(500);
- testdeathsDoor();
- delay(500);
- testAngry();
- delay(500);
- testHungry();
- delay(500);
- testSick();
- delay(500);
- testMove();
-delay(500);
-  drawMenu();
-}
-*/
-
- void Emote0(const unsigned char animation[][704]){
-/*  for (int i = 0; i <sizeof animation; i++){
-  clearSpace();
-   display.drawBitmap(xpos,YORIGIN,
-  animation[i], 88, 44, 1);
-  display.display();
-    }*/
- 
+   
+  else if (not(MOVERIGHT)){
   clearYokaiSpace();
-  display.drawBitmap(xpos,YORIGIN,
-  animation[0], 128, 44, 1);
+  display.drawBitmap(xpos,18,
+  slime[0], 128, 44, 1);
   display.display();
-  
- }
-
-void Emote1(const unsigned char animation[][704]){
-   clearYokaiSpace();
-   display.drawBitmap(xpos,YORIGIN,
-  animation[1], 128, 44, 1);
-  display.display();
+  xpos-=2;
+  }
+  if (xpos<xposmax && MOVERIGHT|| xpos < xposmin ) {
+  MOVERIGHT = true;}
+   
+    else{
+    MOVERIGHT = false;
+    }
 }
 
-void clearYokaiSpace(){
-  display.fillRect(0,17, 128, 47, BLACK);
+void slimeMove1(){
+  if(MOVERIGHT){
+    clearYokaiSpace();
+  display.drawBitmap(xpos,18,
+  slime[1], 128, 44, 1);
+  display.display();
+  xpos+=2;
+
+  }
+   
+  else if (not(MOVERIGHT)){
+  clearYokaiSpace();
+  display.drawBitmap(xpos,18,
+  slime[1], 128, 44, 1);
+  display.display();
+  xpos-=2;
+  }
+  if (xpos<xposmax && MOVERIGHT|| xpos < xposmin ) {
+  MOVERIGHT = true;}
+   
+    else{
+    MOVERIGHT = false;
+    }
+}
+     
+
+void Evolve (int randYokai){
+  
   
 }
+ 
 
 void clearMenu(){
   display.fillRect(0, 0, 128, 17, BLACK);
@@ -212,169 +297,4 @@ void drawMenu(){
       display.drawBitmap(3+(i*26), 1, menuIcons[i],16,16,1);
       
    }
-  }
-
-/*
-
- /*   
-void testSleeping(){
-  display.drawBitmap(xpos,YORIGIN,
-  slimeSleep[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-
-
-display.drawBitmap(
-    xpos,YORIGIN,
-  slimeSleep[1], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  
-  display.drawBitmap(xpos,YORIGIN,
-  slimeSleep[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-     }*/
-
-/*void testdeathsDoor(){
-  display.drawBitmap(xpos,YORIGIN,
-  slimeDying[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-
-
-display.drawBitmap(
-    xpos,YORIGIN,
-    slimeDying[1], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  
-  display.drawBitmap(xpos,YORIGIN,
-  slimeDying[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-     }
-void testSick(){
-  display.drawBitmap(xpos,YORIGIN,
-  slimeDying[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-
-
-display.drawBitmap(
-    xpos,YORIGIN,
-    slimeSick[1], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  
-  display.drawBitmap(xpos,YORIGIN,
-  slimeSick[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-     }
-
-void testHungry(){
-  display.drawBitmap(xpos,YORIGIN,
-  slimeHungry[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-
-
-display.drawBitmap(
-    xpos,YORIGIN,
-    slimeHungry[1], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  
-  display.drawBitmap(xpos,YORIGIN,
-  slimeHungry[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-     }
-void testAngry(){
-  display.drawBitmap(xpos,YORIGIN,
-  slimeAngry[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-
-
-display.drawBitmap(
-    xpos,YORIGIN,
-    slimeAngry[1], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  
-  display.drawBitmap(xpos,YORIGIN,
-  slimeAngry[0], 44, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearSpace();
-  delay(DELTIME);
-     }
-     */
-void testMove(){
-  if(MOVERIGHT){
-  display.drawBitmap(xpos,YORIGIN,
-  slimeIdle[0], 88, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearYokaiSpace();
-  delay(DELTIME);
-  xpos+=2;
-
-display.drawBitmap(
-    xpos,YORIGIN,
-    slimeIdle[1], 88, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearYokaiSpace();
-     xpos+=2;}
-  
-  if (not(MOVERIGHT))
-  {display.drawBitmap(xpos,YORIGIN,
-  slimeIdle[0], 88, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearYokaiSpace();
-  delay(DELTIME);
-  xpos-=2;
-  
-display.drawBitmap(
-    xpos,YORIGIN,
-    slimeIdle[1], 88, 44, 1);
-  display.display();
-  delay(DELTIME);
-  clearYokaiSpace();
-    xpos-=2;}
-  
-  if (xpos<xposmax && MOVERIGHT|| xpos < xposmin ) {
-  MOVERIGHT = true;}
-   
-    else{
-    MOVERIGHT = false;
-    }
-     
   }
