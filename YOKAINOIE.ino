@@ -189,48 +189,48 @@ void loop() {
   switch (yokaiNumber) {
     case 0:
       if (hasTicked) {
-        EmoteSpawn0(mad);
-        slimeMove0();
+        
+        slimeMove0(poop);
         
       }
       else {
-        EmoteSpawn1(mad);
-        slimeMove1();
+        
+        slimeMove1(poop);
         
       }
       break;
     case 1:
       if (hasTicked) {
-        EmoteSpawn0(mad);
-        YokaiFrame2(kappa);
+        
+        YokaiFrame2(kappa, mad);
       }
       else {
-        EmoteSpawn1(mad);
-        YokaiFrame1(kappa);
+        
+        YokaiFrame1(kappa, mad);
         
       }
       break;
     case 2:
       if (hasTicked) {
-        EmoteSpawn0(mad);
-        YokaiFrame2(umibozu);
+        
+        YokaiFrame2(umibozu, mad);
         
       }
       else {
-        EmoteSpawn1(mad);
-        YokaiFrame1(umibozu);
+        
+        YokaiFrame1(umibozu, mad);
       }
       break;
     case 3:
       if (hasTicked) {
-        EmoteSpawn0(mad);
-        YokaiFrame2(necklady);
+        
+        YokaiFrame2(necklady, mad);
         
       }
       else {
         
-        EmoteSpawn1(mad);
-        YokaiFrame1(necklady);
+        
+        YokaiFrame1(necklady, mad);
       }
       break;
   /*  case 4:
@@ -262,38 +262,32 @@ void clearYokaiSpace() {
   display.fillRect(0, 17, 128, 47, BLACK);
 }
 
-void YokaiFrame1(const unsigned char theyokai[][704]) {
+void YokaiFrame1(const unsigned char theyokai[][704], const unsigned char emotion[][60]) {
   clearYokaiSpace();
   display.drawBitmap(0, 18,
                      theyokai[0], 128, 44, 1);
-  display.display();
-
-
-}
-
-void EmoteSpawn0(const unsigned char emotion[][60]) {
+  
   display.drawBitmap(20, 20, emotion[0], 20, 20, 1);
   display.display();
+
+
 }
 
-void EmoteSpawn1(const unsigned char emotion[][60]) {
-  display.drawBitmap(20, 20, emotion[1], 20, 20, 1);
-  display.display();
-}
-
-void YokaiFrame2(const unsigned char theyokai[][704]) {
+void YokaiFrame2(const unsigned char theyokai[][704],const unsigned char emotion[][60]) {
   clearYokaiSpace();
   display.drawBitmap(0, 18,
                      theyokai[1], 128, 44, 1);
+  display.drawBitmap(20, 20, emotion[1], 20, 20, 1);
   display.display();
 
 }
 
-void slimeMove0() {
+void slimeMove0(const unsigned char emotion[][60]) {
   if (MOVERIGHT) {
     clearYokaiSpace();
     display.drawBitmap(xpos, 18,
                        slime[0], 128, 44, 1);
+    display.drawBitmap(35, 44, emotion[0], 20,20,1);
     display.display();
     xpos += 2;
 
@@ -303,6 +297,7 @@ void slimeMove0() {
     clearYokaiSpace();
     display.drawBitmap(xpos, 18,
                        slime[0], 128, 44, 1);
+    display.drawBitmap(35, 44, emotion[0], 20,20,1);
     display.display();
     xpos -= 2;
   }
@@ -315,11 +310,12 @@ void slimeMove0() {
   }
 }
 
-void slimeMove1() {
+void slimeMove1(const unsigned char emotion[][60]) {
   if (MOVERIGHT) {
     clearYokaiSpace();
     display.drawBitmap(xpos, 18,
                        slime[1], 128, 44, 1);
+    display.drawBitmap(35, 44, emotion[1], 20,20,1);
     display.display();
     xpos += 2;
 
@@ -329,6 +325,7 @@ void slimeMove1() {
     clearYokaiSpace();
     display.drawBitmap(xpos, 18,
                        slime[1], 128, 44, 1);
+    display.drawBitmap(35, 44, emotion[1], 20,20,1);
     display.display();
     xpos -= 2;
   }
@@ -392,6 +389,7 @@ int playMinigame () {
           display.print(miniChoices[i]);
         }
         display.fillRect(5 + (menucount * 7), 14 + (menucount * 17), 6, 6, WHITE);
+        
         display.display();
 
         if (left == LOW || right == LOW || center == LOW) {
@@ -626,6 +624,7 @@ void displayMiniIntro() {
   display.setTextColor(WHITE);
   //1
   display.print("JAN");
+  
   display.display();
   delay(1000);
   display.clearDisplay();
@@ -633,6 +632,7 @@ void displayMiniIntro() {
 
   display.setCursor(20, 20);
   display.print("KEN");
+  
   display.display();
   delay(1000);
   display.clearDisplay();
@@ -640,6 +640,7 @@ void displayMiniIntro() {
   //3
   display.setCursor(8, 20);
   display.print("PON!");
+  
   display.display();
   delay(2000);
   display.clearDisplay();
@@ -649,8 +650,9 @@ void displayMiniIntro() {
   display.setTextSize(3);
   String chooseYourWeapon[3] = {"Choose", "Your", "Weapon!"};
   for (int i = 0; i <= 2; i++) {
-    display.setCursor(2, 20);
+    display.setCursor(2, 30);
     display.print(chooseYourWeapon[i]);
+    
     display.display();
     delay(450);
     display.clearDisplay();
