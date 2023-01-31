@@ -1,11 +1,15 @@
 # Yokainoie - 妖怪の家
 A home for yokai
 
+Yokai are spirits from Japanese culture that have bizarre lore
+
+Myself and my roommate created a 3d printed shrine where Yokai could inhabit. This project harkens back to the Tamagotchi craze from the 90s.  The Yokai appear as a slime first, and then evolve into a random form that you can play with, clean up after, feed, etc.   (2019)
+
 Yokai no ie is a virtual pet for the arduino using a SSD1306. 
 
 Was built on the Pro micro, but end product is made for the UNO.
 
-Wiring diagram will be uploaded eventially. 
+Todo: Wiring diagram. 
 
 You create (3d print) a space for a Yokai to inhabit. One will fill the space as a spirit "blob" at first, until it is comfortable enough to reveal its true form to you. Keep track of the Yokai's emotions, play games with it, feed it treats while it inhabits your space. 
 
